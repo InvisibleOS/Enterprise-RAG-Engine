@@ -1,94 +1,120 @@
-﻿# Enterprise RAG Engine
+# Enterprise RAG Engine
 
-A production-ready **Retrieval-Augmented Generation (RAG)** system built to eliminate AI hallucinations by grounding answers in internal data.
+### High-Precision Document Intelligence & Analysis Platform
 
-[**Live Demo Here**](https://enterprise-rag-engine.streamlit.app/)
+[Live Demonstration](https://enterprise-rag-engine.streamlit.app/)
 
-Unlike standard tutorial implementations that rely on heavy frameworks, this project utilizes a **Pure Python** architecture with raw SDKs for maximum control, lower latency, and zero dependency bloat.
+Enterprise RAG Engine is a production-grade **Retrieval-Augmented Generation** system designed for high-stakes corporate environments where accuracy is non-negotiable. The platform ingests internal documentation—such as technical manuals, legal contracts, and compliance policies—and enables users to query this knowledge base with verifiable accuracy.
 
-## Key Features
+Unlike rapid-prototyping implementations that rely on third-party abstraction layers like the LangChain API, this platform is architected using a **Pure Python** approach. It relies purely on the raw **Google Gemini API** and SDKs to ensure deterministic behavior, minimize latency, and eliminate the security and maintenance risks associated with dependency bloat.
 
-* **Zero-Framework Architecture:** Built without LangChain or LlamaIndex to demonstrate first-principles understanding of Vector Search and LLM orchestration.
-* **Manual Ingestion Pipeline:** Implements a custom sliding-window chunking algorithm (1000 chars / 200 overlap) to preserve semantic context.
-* **Serverless Vector Search:** Uses **Pinecone Serverless** for scalable, low-latency embedding retrieval.
-* **Dual-Model Architecture:**
-    * **Embeddings:** Google `text-embedding-004` (768 Dimensions) for semantic search.
-    * **Generation:** Google `Gemini 1.5 Flash` for high-speed, cost-effective answer synthesis.
-* **Source Citations:** Every answer includes a "View Sources" dropdown, allowing users to audit the AI's reasoning against the original PDF text.
+## Core Capabilities
 
-## Tech Stack
+- **Deterministic Ingestion Pipeline:** Utilizes a sliding-window segmentation algorithm (1000 characters with 200-character overlap) to strictly preserve semantic context across clause boundaries, preventing information fragmentation.
 
-| Component | Technology | Reasoning |
-| :--- | :--- | :--- |
-| **Frontend** | Streamlit | Rapid prototyping, clean state management. |
-| **LLM** | Gemini 1.5 Flash | High throughput, large context window, free tier availability. |
-| **Vector DB** | Pinecone | Managed serverless infrastructure (no Docker required). |
-| **Orchestration** | **Pure Python** | Avoided LangChain/LlamaIndex to prevent dependency bloat and "black box" abstraction leakage. |
-| **Parsing** | pypdf | Robust, lightweight PDF text extraction. |
+- **Serverless Vector Infrastructure:** Integrated with Pinecone for scalable, milliseconds-latency embedding retrieval without the operational overhead of container management.
 
-## Architecture
+- **Hallucination Mitigation:** Enforces a strict evidence-based generation model. The reasoning engine must cite specific paragraphs from the source text for every claim generated, providing an audit trail for compliance verification.
 
-The system follows a standard RAG ETL (Extract, Transform, Load) pipeline:
+- **Dual-Model Architecture:**
 
-1.  **Ingest:** PDF documents are parsed into raw text.
-2.  **Chunk:** Text is sliced into overlapping windows to ensure boundary context isn't lost.
-3.  **Embed:** Chunks are sent to Google's Embedding API to generate 768-dimensional vectors.
-4.  **Upsert:** Vectors + Metadata (original text) are batched (100 at a time) and pushed to Pinecone.
-5.  **Retrieve:** User queries are embedded and compared against the database using **Cosine Similarity**.
-6.  **Synthesize:** Top 3 matches are injected into a strict system prompt for the LLM to generate the final answer.
+   - **Semantic Search:** Google text-embedding-004 (768 Dimensions) for high-fidelity vector representation.
 
-## How to Run Locally
+   - **Synthesis:** Google Gemini 1.5 Flash for high-throughput, cost-efficient answer generation.
 
-*Note: You can skip installation and test the live app directly via the link above.*
+## Strategic Engineering Decisions
 
-### 1. Clone the Repository
-```bash
-git clone [https://github.com/yourusername/enterprise-rag-engine.git](https://github.com/yourusername/enterprise-rag-engine.git)
-cd enterprise-rag-engine
-````
+A core differentiator of this platform is the deliberate exclusion of orchestration frameworks such as LangChain or LlamaIndex. While such frameworks offer rapid prototyping speed, they introduce significant technical debt in production environments.
 
-### 2\. Set Up Environment
+This platform utilizes Raw Google GenAI and Pinecone Clients to achieve specific engineering outcomes:
 
-```bash
+**1. Elimination of Abstraction Leaks**
+
+Frameworks often obscure underlying API interactions, making it difficult to debug specific failure modes (e.g., determining if a timeout occurred at the embedding layer or the vector database layer). By using raw SDKs, the system maintains total visibility into the retrieval process, allowing for precise tuning of top_k parameters based on actual data performance.
+
+**2. Dependency Stability & Security**
+
+The AI ecosystem evolves rapidly. Frameworks frequently introduce breaking changes or dependency conflicts. A Pure Python approach ensures the application relies only on stable, official vendor SDKs, significantly reducing the risk of upstream breakage and reducing the container image size by removing unused transitive dependencies.
+
+**3. Granular Error Handling**
+
+Direct integration enables the implementation of custom resilience patterns. The system features a bespoke exponential backoff mechanism to handle API rate limits (HTTP 429) and service interruptions gracefully. This logic is often difficult to configure or observe when wrapped in high-level chain abstractions.
+
+**4. Latency Optimization**
+
+By removing the overhead of chain serialization, callback handlers, and intermediate parsing steps common in frameworks, the application achieves lower latency in the Request-to-Response loop, a critical metric for real-time user interaction.
+
+## System Architecture
+
+The application follows a specialized ETL (Extract, Transform, Load) pipeline optimized for document processing:
+
+1. **Ingestion:** PDF documents are parsed into raw text strings.
+
+2. **Segmentation:** Text is processed via the sliding-window algorithm to maintain semantic integrity.
+
+3. **Vectorization:** Segments are passed to the Embedding API to generate dense vectors.
+
+4. **Indexing:** Vectors and Metadata (Source Text) are batched and upserted to the vector database.
+
+5. **Retrieval:** User queries are embedded and compared using Cosine Similarity to retrieve the most relevant context windows.
+
+6. **Synthesis:** Retrieved contexts are injected into a strict system prompt for the Large Language Model to generate the final answer.
+
+## Technical Stack
+
+| Component | Technology | Role                                |
+|-----------|------------|-------------------------------------|
+| Frontend  | Streamlit  | User interface and state management.|
+| Reasoning Engine | Gemini 1.5 Flash | Context synthesis and answer generation. |
+| Memory | Pinecone | Managed vector storage and similarity search. |
+| Orchestration | Pure Python | Request handling, error logic, and API integration. |
+| Parsing | pypdf | Document text extraction. |
+
+## Local Deployment
+
+*Note: The application is deployed and accessible via the provided demonstration link.*
+
+**1. Repository Setup**
+
+```git
+git clone https://github.com/InvisibleOS/Enterprise-RAG-Engine.git
+cd Enterprise-RAG-Engine
+```
+
+
+**2. Environment Configuration**
+
+```py
 # Create virtual environment
 python -m venv .venv
 
-# Activate it (Windows)
+# Activate (Windows)
 .\.venv\Scripts\activate
 
-# Activate it (Mac/Linux)
+# Activate (Mac/Linux)
 source .venv/bin/activate
 ```
 
-### 3\. Install Dependencies
 
-```bash
+**3. Dependency Installation**
+
+```py
 pip install -r requirements.txt
 ```
 
-### 4\. Configure Secrets
 
-Create a `.streamlit/secrets.toml` file (or input keys directly in the UI sidebar):
+**4. Security Configuration**
 
-```toml
+Create a `.streamlit/secrets.toml` file to manage API keys securely:
+
+```
 GOOGLE_API_KEY = "your_google_key"
 PINECONE_API_KEY = "your_pinecone_key"
 ```
 
-### 5\. Launch Application
 
-```bash
+**5. Application Launch**
+
+```py
 python -m streamlit run app.py
 ```
-
-## 🧠 Why "Hard Mode" (Pure Python)?
-
-Most RAG tutorials use LangChain. While powerful, I found that framework abstractions often obscure the underlying logic and introduce "dependency hell."
-
-By building this manually, I gained direct control over:
-
-  * **Chunking Strategy:** Writing the sliding window logic ensured I understood exactly how data was being segmented.
-  * **API Latency:** Direct SDK calls allowed for easier debugging and optimization of network requests.
-
-  * **Error Handling:** Custom try/except blocks provided clearer visibility into failure states (e.g., Pinecone connection timeouts) than generic framework errors.
-
