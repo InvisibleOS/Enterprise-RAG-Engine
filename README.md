@@ -2,7 +2,7 @@
 
 A production-ready **Retrieval-Augmented Generation (RAG)** system built to eliminate AI hallucinations by grounding answers in internal data.
 
-[**Live Demo Here**](https://your-app-url.streamlit.app/)
+[**Live Demo Here**](https://enterprise-rag-engine.streamlit.app/)
 
 Unlike standard tutorial implementations that rely on heavy frameworks, this project utilizes a **Pure Python** architecture with raw SDKs for maximum control, lower latency, and zero dependency bloat.
 
@@ -91,3 +91,4 @@ By building this manually, I gained direct control over:
   * **API Latency:** Direct SDK calls allowed for easier debugging and optimization of network requests.
 
   * **Error Handling:** Custom try/except blocks provided clearer visibility into failure states (e.g., Pinecone connection timeouts) than generic framework errors.
+
