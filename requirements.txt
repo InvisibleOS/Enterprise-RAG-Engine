@@ -1,0 +1,5 @@
+streamlit==1.31.0
+google-genai==0.2.2
+pinecone-client==3.1.0
+pypdf==4.0.2
+python-dotenv==1.0.1
